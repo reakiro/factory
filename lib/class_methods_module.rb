@@ -1,26 +1,27 @@
 module ClassMethodsModule
   define_method(:[]) do |attribute|
     case attribute
-     when String, Symbol
-       self.send(:instance_variable_get, "@#{attribute}".to_sym)
-     when Integer
-      self.send(:instance_variable_get, instance_variables[attribute].to_sym)
-     end
+      when String, Symbol
+        self.send(:instance_variable_get, "@#{attribute}".to_sym)
+      when Integer
+        self.send(:instance_variable_get, instance_variables[attribute].to_sym)
+    end
   end
+
   define_method(:[]=) do |attribute, value|
     case attribute
       when String, Symbol
         self.send(:instance_variable_set, "@#{attribute}".to_sym, value)
       when Integer
         self.send(:instance_variable_set, instance_variables[attribute].to_sym, value)
-      end
+    end
   end
 
   define_method(:each) do |&block|
-    get_instance_values.values.each(&block)
+    to_a.each(&block)
   end
   
-  self.send(:define_method, :each_pair) do |&block|
+  define_method(:each_pair) do |&block|
     get_instance_values.each_pair(&block)
   end
 
@@ -45,11 +46,11 @@ module ClassMethodsModule
   end
 
   define_method(:select) do |&block|
-    get_instance_values.values.select(&block)
+    to_a.select(&block)
   end
 
   define_method(:to_a) do 
-    get_instance_values.values.to_a
+    get_instance_values.values
   end
 
   define_method(:values_at) do |*indexes|
@@ -59,22 +60,14 @@ module ClassMethodsModule
   end
 
   define_method(:==) do |other|
-    if self.class == other.class && self.get_instance_values == other.get_instance_values
-      true
-    else
-      false
-    end
+    self.class == other.class && self.get_instance_values == other.get_instance_values
   end
 
   define_method(:eql?) do 
-    if self.class == other.class && self.get_instance_values == other.get_instance_values
-      true
-    else
-      false
-    end
+    self.class == other.class && self.get_instance_values == other.get_instance_values
   end
 
-  def get_instance_values
+  define_method(:get_instance_values) do 
     instance_values = instance_variables.each_with_object(Hash.new) do |variable, hash|
         hash[variable.to_s[1..-1].to_sym] = self.send(:instance_variable_get, variable.to_sym)
     end
