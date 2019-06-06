@@ -20,7 +20,7 @@ require_relative 'class_methods_module'
 class Factory
 
   def self.create_class(attributes, &block)
-    c = Class.new do
+    Class.new do
 
       include ClassMethodsModule
 
@@ -34,7 +34,7 @@ class Factory
       end
       
       self.class_eval(&block) if block_given?
-      
+
     end
   end
 
