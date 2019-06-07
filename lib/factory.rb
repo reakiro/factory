@@ -14,3 +14,34 @@
 # - to_a
 # - values_at
 # - ==, eql?
+
+require_relative 'class_methods_module'
+
+class Factory
+  def self.create_class(attributes, &block)
+    Class.new do
+      include ClassMethodsModule
+
+      self.send(:attr_accessor, *attributes)
+
+      define_method(:initialize) do |*values|
+        raise ArgumentError if values.length > attributes.length
+
+        values.each_with_index do |value, index|
+          self.send("#{attributes[index]}=", value)
+        end
+      end
+
+      self.class_eval(&block) if block_given?
+    end
+  end
+
+  def self.new(new_class, *attributes, &block)
+    if new_class.is_a? String
+      Factory.const_set new_class.capitalize, create_class(attributes, &block)
+    else
+      attributes.unshift(new_class)
+      create_class(attributes, &block)
+    end
+  end
+end
