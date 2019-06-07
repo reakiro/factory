@@ -31,15 +31,16 @@ class Factory
           self.send("#{attributes[index]}=", value)
         end
       end
-      
+
       self.class_eval(&block) if block_given?
     end
   end
 
-  def self.new(new_class, *attributes, &block)   
+  def self.new(new_class, *attributes, &block)
     if new_class.is_a? String
       Factory.const_set new_class.capitalize, create_class(attributes, &block)
-    else attributes.unshift(new_class)
+    else
+      attributes.unshift(new_class)
       create_class(attributes, &block)
     end
   end
