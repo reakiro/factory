@@ -26,7 +26,7 @@ module ClassMethodsModule
   end
 
   define_method(:dig) do |*values|
-    digged_value = values.inject(self) do |next_value, value|
+    values.inject(self) do |next_value, value|
         next_value.nil? ? break : next_value = next_value[value]
     end
   end
@@ -40,7 +40,7 @@ module ClassMethodsModule
   end
 
   define_method(:members) do
-    members_array = instance_variables.map do |variable|
+    instance_variables.map do |variable|
       variable.to_s[1..-1].to_sym
     end
   end
@@ -54,7 +54,7 @@ module ClassMethodsModule
   end
 
   define_method(:values_at) do |*indexes|
-    values = indexes.map do |index|
+    indexes.map do |index|
       self.send(:instance_variable_get, instance_variables[index].to_sym)
     end
   end
@@ -68,7 +68,7 @@ module ClassMethodsModule
   end
 
   define_method(:get_instance_values) do 
-    instance_values = instance_variables.each_with_object(Hash.new) do |variable, hash|
+    instance_variables.each_with_object(Hash.new) do |variable, hash|
         hash[variable.to_s[1..-1].to_sym] = self.send(:instance_variable_get, variable.to_sym)
     end
   end
